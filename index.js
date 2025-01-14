@@ -33,6 +33,26 @@ async function run() {
           res.send({ token });
       });
 
+      // packagesCollection Methods
+      // Endpoint to get random packages
+      app.get('/api/packages', async (req, res) => {
+          const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+          try {
+              await client.connect();
+              const packagesCollection = client.db('tourism-management').collection('packages');
+              const result = await packagesCollection.aggregate([{ $sample: { size: 3 } }]).toArray();
+              res.send(result);
+          } catch (error) {
+              console.error('Error fetching packages:', error);
+              res.status(500).json({ error: 'Failed to fetch packages' });
+          } finally {
+              await client.close();
+          }
+      });
+    
+    
+    
+
       // save or update a user in db
       app.post('/users/:email', async (req, res) => {
           const email = req.params.email;
