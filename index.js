@@ -32,9 +32,6 @@ async function run() {
           const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
           res.send({ token });
       });
-    
-    
-
 
       // save or update a user in db
       app.post('/users/:email', async (req, res) => {
