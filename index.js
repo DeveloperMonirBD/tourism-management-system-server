@@ -26,6 +26,7 @@ async function run() {
         const usersCollection = client.db('tourism-management').collection('users');
         const packagesCollection = client.db('tourism-management').collection('packages');
         const tourGuidesCollection = client.db('tourism-management').collection('tourGuides');
+        const bookingsCollection = client.db('tourism-management').collection('bookings');
 
         // jwt related api
         app.post('/jwt', async (req, res) => {
@@ -81,6 +82,23 @@ async function run() {
             const package = await tourGuidesCollection.findOne(query);
             res.send(package);
         });
+
+        // bookingCollection Methods
+        // save booking data in the bookingCollection
+        app.post('/api/bookings', async (req, res) => {
+            try {
+                const booking = req.body;
+                await bookingsCollection.insertOne(booking);
+                res.status(201).json(booking);
+            } catch (error) {
+                res.status(400).json({ message: error.message });
+            }
+        });
+
+
+
+
+        
 
         // save or update a user in db
         app.post('/users/:email', async (req, res) => {
