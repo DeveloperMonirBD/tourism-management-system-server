@@ -27,6 +27,7 @@ async function run() {
         const packagesCollection = client.db('tourism-management').collection('packages');
         const tourGuidesCollection = client.db('tourism-management').collection('tourGuides');
         const bookingsCollection = client.db('tourism-management').collection('bookings');
+        const storiesCollection = client.db('tourism-management').collection('stories');
 
         // jwt related api
         app.post('/jwt', async (req, res) => {
@@ -97,8 +98,17 @@ async function run() {
 
 
 
-
-        
+        // storiesCollection Methods
+        // save stories data in the storiesCollection
+        app.post('/api/stories', async (req, res) => {
+            try {
+                const newStory = req.body;
+                await storiesCollection.insertOne(newStory);
+                res.status(201).json(newStory);
+            } catch (error) {
+                res.status(400).json({ message: error.message });
+            }
+        });
 
         // save or update a user in db
         app.post('/users/:email', async (req, res) => {
