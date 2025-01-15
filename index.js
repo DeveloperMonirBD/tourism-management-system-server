@@ -74,6 +74,14 @@ async function run() {
             }
         });
 
+        // Endpoint to get specific guide data
+        app.get('/api/tourGuides/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const package = await tourGuidesCollection.findOne(query);
+            res.send(package);
+        });
+
         // save or update a user in db
         app.post('/users/:email', async (req, res) => {
             const email = req.params.email;
