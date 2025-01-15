@@ -25,6 +25,7 @@ async function run() {
     try {
         const usersCollection = client.db('tourism-management').collection('users');
         const packagesCollection = client.db('tourism-management').collection('packages');
+        const tourGuidesCollection = client.db('tourism-management').collection('tourGuides');
 
         // jwt related api
         app.post('/jwt', async (req, res) => {
@@ -34,12 +35,11 @@ async function run() {
         });
 
         // packagesCollection Methods
-        // Endpoint to get random packages
+        // Endpoint to get random packages 3 data
         app.get('/api/packages', async (req, res) => {
             const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
             try {
                 await client.connect();
-                const packagesCollection = client.db('tourism-management').collection('packages');
                 const result = await packagesCollection.aggregate([{ $sample: { size: 3 } }]).toArray();
                 res.send(result);
             } catch (error) {
@@ -56,6 +56,22 @@ async function run() {
             const query = { _id: new ObjectId(id) };
             const package = await packagesCollection.findOne(query);
             res.send(package);
+        });
+
+        // tourGuidesCollection Methods
+        // Endpoint to get random guides 6 data
+        app.get('/api/tourGuides', async (req, res) => {
+            const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+            try {
+                await client.connect();
+                const result = await tourGuidesCollection.aggregate([{ $sample: { size: 6 } }]).toArray();
+                res.send(result);
+            } catch (error) {
+                console.error('Error fetching packages:', error);
+                res.status(500).json({ error: 'Failed to fetch packages' });
+            } finally {
+                await client.close();
+            }
         });
 
         // save or update a user in db
