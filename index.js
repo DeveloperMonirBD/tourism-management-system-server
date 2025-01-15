@@ -96,8 +96,6 @@ async function run() {
             }
         });
 
-
-
         // storiesCollection Methods
         // save stories data in the storiesCollection
         app.post('/api/stories', async (req, res) => {
@@ -107,6 +105,16 @@ async function run() {
                 res.status(201).json(newStory);
             } catch (error) {
                 res.status(400).json({ message: error.message });
+            }
+        });
+
+        // get random stories data in the storiesCollection
+        app.get('/api/stories/random', async (req, res) => {
+            try {
+                const stories = await storiesCollection.aggregate([{ $sample: { size: 4 } }]).toArray();
+                res.status(200).json(stories);
+            } catch (error) {
+                res.status(500).json({ message: 'Error fetching stories', error: error.message });
             }
         });
 
