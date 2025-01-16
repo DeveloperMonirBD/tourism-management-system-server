@@ -97,7 +97,7 @@ async function run() {
         });
 
         // storiesCollection Methods
-        // save stories data in the storiesCollection
+        // save stories data in storiesCollection
         app.post('/api/stories', async (req, res) => {
             try {
                 const newStory = req.body;
@@ -105,6 +105,16 @@ async function run() {
                 res.status(201).json(newStory);
             } catch (error) {
                 res.status(400).json({ message: error.message });
+            }
+        });
+
+        // get all stories data in storiesCollection
+        app.get('/api/stories', async (req, res) => {
+            try {
+                const stories = await storiesCollection.find().toArray();
+                res.status(200).json(stories);
+            } catch (error) {
+                res.status(500).json({ message: 'Error fetching stories', error: error.message });
             }
         });
 
@@ -117,6 +127,9 @@ async function run() {
                 res.status(500).json({ message: 'Error fetching stories', error: error.message });
             }
         });
+
+
+
 
         // save or update a user in db
         app.post('/users/:email', async (req, res) => {
