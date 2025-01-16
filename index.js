@@ -23,6 +23,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
+        const projectsCollection = client.db('tourism-management').collection('projects');
         const usersCollection = client.db('tourism-management').collection('users');
         const packagesCollection = client.db('tourism-management').collection('packages');
         const tourGuidesCollection = client.db('tourism-management').collection('tourGuides');
@@ -34,6 +35,17 @@ async function run() {
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
             res.send({ token });
+        });
+
+        // aboutCollection Methods
+        // get all about data in aboutCollection
+        app.get('/api/projects', async (req, res) => {
+            try {
+                const projects = await projectsCollection.find().toArray();
+                res.status(200).json(projects);
+            } catch (error) {
+                res.status(500).json({ message: 'Error fetching stories', error: error.message });
+            }
         });
 
         // packagesCollection Methods
@@ -127,9 +139,6 @@ async function run() {
                 res.status(500).json({ message: 'Error fetching stories', error: error.message });
             }
         });
-
-
-
 
         // save or update a user in db
         app.post('/users/:email', async (req, res) => {
