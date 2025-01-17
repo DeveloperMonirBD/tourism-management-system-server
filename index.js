@@ -150,7 +150,7 @@ async function run() {
             }
         });
 
-        // get specific data by email in storiesCollection
+        // get specific data by email in the storiesCollection
         app.get('/api/manageStories/:email', async (req, res) => {
             const email = req.params?.email;
             const query = { email: email };
@@ -160,6 +160,14 @@ async function run() {
             } catch (error) {
                 res.status(500).json({ message: 'Error fetching stories', error: error.message });
             }
+        });
+
+        // get a specific stories data in the storiesCollection
+        app.get('/api/stories/:id', async (req, res) => {            
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const story = await storiesCollection.findOne(query);
+            res.send(story);
         });
 
         // save or update a user in db
