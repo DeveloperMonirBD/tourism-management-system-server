@@ -57,6 +57,18 @@ async function run() {
             res.send(result);
         });
 
+        // get user data in db collection
+        app.get('/api/users/:email', async (req, res) => {
+            const email = req.params?.email
+            const query = { email: email }
+            try {
+                const user = await usersCollection.findOne(query);
+                res.status(200).json(user)
+            } catch (error) {
+                res.status(500).json({message: 'Error fetching user', error: error.message})
+            }
+        })
+
         // aboutCollection Methods
         // get all about data in aboutCollection
         app.get('/api/projects', async (req, res) => {
@@ -138,6 +150,17 @@ async function run() {
             }
         });
 
+        app.get('/api/bookings/:email', async (req, res) => {
+            const email = req.params?.email
+            const query = { email: email }
+            try {
+                const status = await bookingsCollection.find(query).toArray();
+                res.status(200).json(status)
+            } catch (error) {
+                res.status(500).json({message: 'Error fetch bookings', error: error.message})
+            }
+        })
+
         // storiesCollection Methods
         // save stories data in storiesCollection
         app.post('/api/stories', async (req, res) => {
@@ -197,6 +220,9 @@ async function run() {
             const result = await storiesCollection.findOne(query);
             res.send(result);
         });
+
+
+
 
         // Send a ping to confirm a successful connection
         await client.db('admin').command({ ping: 1 });
