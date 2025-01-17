@@ -162,13 +162,15 @@ async function run() {
             }
         });
 
-        // get a specific stories data in the storiesCollection
-        app.get('/api/stories/:id', async (req, res) => {            
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
-            const story = await storiesCollection.findOne(query);
-            res.send(story);
-        });
+        // delete specific data in the storiesCollection
+        app.delete('/api/stories/:id', async(req, res) => {
+            const id = req.params.id 
+            const query = { _id: new ObjectId(id) }
+            const result = await storiesCollection.deleteOne(query);
+            res.send(result);
+        } )
+
+
 
         // save or update a user in db
         app.post('/users/:email', async (req, res) => {
