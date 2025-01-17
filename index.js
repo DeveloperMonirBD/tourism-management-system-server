@@ -23,8 +23,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        const projectsCollection = client.db('tourism-management').collection('projects');
         const usersCollection = client.db('tourism-management').collection('users');
+        const projectsCollection = client.db('tourism-management').collection('projects');
         const packagesCollection = client.db('tourism-management').collection('packages');
         const tourGuidesCollection = client.db('tourism-management').collection('tourGuides');
         const bookingsCollection = client.db('tourism-management').collection('bookings');
@@ -35,6 +35,26 @@ async function run() {
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
             res.send({ token });
+        });
+
+        // user related Collection
+        // save user data in usersCollection
+        app.post('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const user = req.body;
+            // check if user exists in db
+            const isExist = await usersCollection.findOne(query);
+
+            if (isExist) {
+                return res.send(isExist);
+            }
+
+            const result = await usersCollection.insertOne({
+                ...user,
+                timestamp: Date.now()
+            });
+            res.send(result);
         });
 
         // aboutCollection Methods
@@ -163,31 +183,18 @@ async function run() {
         });
 
         // delete specific data in the storiesCollection
-        app.delete('/api/stories/:id', async(req, res) => {
-            const id = req.params.id 
-            const query = { _id: new ObjectId(id) }
+        app.delete('/api/stories/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
             const result = await storiesCollection.deleteOne(query);
             res.send(result);
-        } )
+        });
 
-
-
-        // save or update a user in db
-        app.post('/users/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email };
-            const user = req.body;
-            // check if user exists in db
-            const isExist = await usersCollection.findOne(query);
-
-            if (isExist) {
-                return res.send(isExist);
-            }
-
-            const result = await usersCollection.insertOne({
-                ...user,
-                timestamp: Date.now()
-            });
+        // get a specific stories data in the storiesCollection
+        app.get('/api/stories/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await storiesCollection.findOne(query);
             res.send(result);
         });
 
