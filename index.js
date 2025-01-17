@@ -64,6 +64,16 @@ async function run() {
             }
         });
 
+        // Endpoint to get all packages data
+        app.get('/api/trips', async (req, res) => {
+            try {
+                const trips = await packagesCollection.find().toArray();
+                res.status(200).json(trips);
+            } catch (error) {
+                res.status(500).json({ message: 'Error fetching stories', error: error.message });
+            }
+        });
+
         // Endpoint to get specific packages data
         app.get('/api/packages/:id', async (req, res) => {
             const id = req.params.id;
@@ -134,6 +144,18 @@ async function run() {
         app.get('/api/stories/random', async (req, res) => {
             try {
                 const stories = await storiesCollection.aggregate([{ $sample: { size: 4 } }]).toArray();
+                res.status(200).json(stories);
+            } catch (error) {
+                res.status(500).json({ message: 'Error fetching stories', error: error.message });
+            }
+        });
+
+        // get specific data by email in storiesCollection
+        app.get('/api/manageStories/:email', async (req, res) => {
+            const email = req.params?.email;
+            const query = { email: email };
+            try {
+                const stories = await storiesCollection.find(query).toArray();
                 res.status(200).json(stories);
             } catch (error) {
                 res.status(500).json({ message: 'Error fetching stories', error: error.message });
