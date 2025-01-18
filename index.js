@@ -214,13 +214,25 @@ async function run() {
             res.send(result);
         });
 
-        // get a specific stories data in the storiesCollection
-        app.get('/api/stories/:id', async (req, res) => {
+        // Put Method to Update application by id
+        app.put('/api/stories/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
-            const result = await storiesCollection.findOne(query);
+            const story = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedStory = {
+                $set: {
+                    title: story.title,
+                    text: story.text,
+                    photo_url: story.photo_url
+                }
+            };
+
+            const result = await storiesCollection.updateOne(filter, updatedStory, options);
             res.send(result);
         });
+
+
 
         // applicationsCollection Methods
         // save application data in the applicationsCollection
