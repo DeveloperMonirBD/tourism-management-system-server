@@ -29,6 +29,7 @@ async function run() {
         const tourGuidesCollection = client.db('tourism-management').collection('tourGuides');
         const bookingsCollection = client.db('tourism-management').collection('bookings');
         const storiesCollection = client.db('tourism-management').collection('stories');
+        const applicationsCollection = client.db('tourism-management').collection('applications');
 
         // jwt related api
         app.post('/jwt', async (req, res) => {
@@ -57,17 +58,17 @@ async function run() {
             res.send(result);
         });
 
-        // get user data in db collection
+        // get specific user data in db collection
         app.get('/api/users/:email', async (req, res) => {
-            const email = req.params?.email
-            const query = { email: email }
+            const email = req.params?.email;
+            const query = { email: email };
             try {
                 const user = await usersCollection.findOne(query);
-                res.status(200).json(user)
+                res.status(200).json(user);
             } catch (error) {
-                res.status(500).json({message: 'Error fetching user', error: error.message})
+                res.status(500).json({ message: 'Error fetching user', error: error.message });
             }
-        })
+        });
 
         // aboutCollection Methods
         // get all about data in aboutCollection
@@ -149,17 +150,17 @@ async function run() {
                 res.status(400).json({ message: error.message });
             }
         });
-
+        // get specific booking data in the bookingCollection
         app.get('/api/bookings/:email', async (req, res) => {
-            const email = req.params?.email
-            const query = { email: email }
+            const email = req.params?.email;
+            const query = { email: email };
             try {
                 const status = await bookingsCollection.find(query).toArray();
-                res.status(200).json(status)
+                res.status(200).json(status);
             } catch (error) {
-                res.status(500).json({message: 'Error fetch bookings', error: error.message})
+                res.status(500).json({ message: 'Error fetch bookings', error: error.message });
             }
-        })
+        });
 
         // storiesCollection Methods
         // save stories data in storiesCollection
@@ -221,8 +222,17 @@ async function run() {
             res.send(result);
         });
 
-
-
+        // applicationsCollection Methods
+        // save application data in the applicationsCollection
+        app.post('/api/applications', async (req, res) => {
+            try {
+                const applicationData = req.body;
+                await applicationsCollection.insertOne(applicationData);
+                res.status(201).json(applicationData);
+            } catch (error) {
+                res.status(400).json({ message: error.message });
+            }
+        });
 
         // Send a ping to confirm a successful connection
         await client.db('admin').command({ ping: 1 });
