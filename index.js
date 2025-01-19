@@ -70,6 +70,16 @@ async function run() {
             }
         });
 
+        // get all user data in db
+        app.get('/api/users', async (req, res) => {
+            try {
+                const users = await usersCollection.find().toArray();
+                res.status(200).json(users);
+            } catch (error) {
+                res.status(500).json({ message: 'Error fetching users', error: error.message });
+            }
+        });
+
         // aboutCollection Methods
         // get all about data in aboutCollection
         app.get('/api/projects', async (req, res) => {
@@ -82,6 +92,17 @@ async function run() {
         });
 
         // packagesCollection Methods
+        // save packages data in the packagesCollection
+        app.post('/api/packages', async (req, res) => {
+            try {
+                const package = req.body;
+                await packagesCollection.insertOne(package);
+                res.status(201).json(package);
+            } catch (error) {
+                res.status(400).json({ message: error.message });
+            }
+        });
+
         // Endpoint to get random packages 3 data
         app.get('/api/packages', async (req, res) => {
             const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -150,6 +171,17 @@ async function run() {
                 res.status(400).json({ message: error.message });
             }
         });
+
+        // get all data by using My Assign Tour table
+        app.get('/api/bookings', async (req, res) => {
+            try {
+                const result = await bookingsCollection.find().toArray();
+                res.status(200).json(result);
+            } catch (error) {
+                res.status(500).json({ message: 'Error fetching stories', error: error.message });
+            }
+        });
+
         // get specific booking data in the bookingCollection
         app.get('/api/bookings/:email', async (req, res) => {
             const email = req.params?.email;
@@ -160,6 +192,13 @@ async function run() {
             } catch (error) {
                 res.status(500).json({ message: 'Error fetch bookings', error: error.message });
             }
+        });
+
+        app.delete('/api/bookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await bookingsCollection.deleteOne(query);
+            res.send(result);
         });
 
         // storiesCollection Methods
@@ -232,8 +271,6 @@ async function run() {
             res.send(result);
         });
 
-
-
         // applicationsCollection Methods
         // save application data in the applicationsCollection
         app.post('/api/applications', async (req, res) => {
@@ -245,6 +282,19 @@ async function run() {
                 res.status(400).json({ message: error.message });
             }
         });
+
+        app.get('/api/applications', async (req, res) => {
+            try {
+                const application = await applicationsCollection.find().toArray();
+                res.status(200).json(application);
+            } catch (error) {
+                res.status(500).json({ message: 'Error fetching applications', error: error.message });
+            }
+        })
+
+
+       
+
 
         // Send a ping to confirm a successful connection
         await client.db('admin').command({ ping: 1 });

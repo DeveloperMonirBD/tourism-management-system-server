@@ -2,7 +2,7 @@
 
 # Tourism Management System
 
-## Live URL :
+## Live URL : https://tourism-management-syste-24ab2.web.app
 
 # Tourist Guide Site - Server
 
@@ -122,7 +122,7 @@ To run this project, you will need to add the following environment variables to
 
 4. Open your browser and navigate to
 
-`.........` to view the application.
+`https://tourism-management-syste-24ab2.web.app` to view the application.
 
 ## What to Submit
 
