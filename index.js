@@ -193,12 +193,24 @@ async function run() {
                 res.status(500).json({ message: 'Error fetch bookings', error: error.message });
             }
         });
-
+        // Delete bookings by id
         app.delete('/api/bookings/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await bookingsCollection.deleteOne(query);
             res.send(result);
+        });
+
+        // Update bookings by id
+        app.put('/api/bookings/:id', async (req, res) => {
+            const { id } = req.params;
+            const { status } = req.body;
+            try {
+                await bookingsCollection.updateOne({ _id: new ObjectId(id) }, { $set: { status } });
+                res.status(200).json({ message: 'Status updated successfully' });
+            } catch (error) {
+                res.status(500).json({ message: 'Error updating status', error: error.message });
+            }
         });
 
         // storiesCollection Methods
@@ -282,7 +294,7 @@ async function run() {
                 res.status(400).json({ message: error.message });
             }
         });
-
+        // get all data in the applicationsCollection
         app.get('/api/applications', async (req, res) => {
             try {
                 const application = await applicationsCollection.find().toArray();
@@ -290,11 +302,57 @@ async function run() {
             } catch (error) {
                 res.status(500).json({ message: 'Error fetching applications', error: error.message });
             }
-        })
+        });
+        // get specific data in the applicationsCollection
+        app.delete('/api/applications/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await applicationsCollection.deleteOne(query);
+            res.send(result);
+        });
 
+        // Accept application
+        app.put('/api/users/:id', async (req, res) => {
+            // const { id } = req.params;
+            // const { role } = req.body;
+            // try {
+            //     await usersCollection.updateOne(
+            //         { _id: new ObjectId(id) },
+            //         {
+            //             $set: {
+            //                 role
+            //             }
+            //         }
+            //     );
+            //     res.status(200).json({ message: 'Status updated successfully' });
+            // } catch (error) {
+            //     res.status(500).json({ message: 'Error updating status', error: error.message });
+            // }
 
-       
+            const id = req.params.id;
+            const role = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedRole = {
+                $set: {
+                    role
+                }
+            };
 
+            const result = await storiesCollection.updateOne(filter, updatedRole, options);
+            res.send(result);
+        });
+
+        // Stripe payment process
+        app.post('/api/stripe/payment', async (req, res) => {
+            const { token, amount } = req.body;
+            try {
+                const charge = await stripe.charges.create({ amount, currency: 'usd', source: token.id, description: 'Tour Booking Payment' });
+                res.status(200).json({ message: 'Payment successful', charge });
+            } catch (error) {
+                res.status(500).json({ message: 'Payment failed', error: error.message });
+            }
+        });
 
         // Send a ping to confirm a successful connection
         await client.db('admin').command({ ping: 1 });
