@@ -294,6 +294,7 @@ async function run() {
                 res.status(400).json({ message: error.message });
             }
         });
+        
         // get all data in the applicationsCollection
         app.get('/api/applications', async (req, res) => {
             try {
@@ -303,6 +304,7 @@ async function run() {
                 res.status(500).json({ message: 'Error fetching applications', error: error.message });
             }
         });
+
         // get specific data in the applicationsCollection
         app.delete('/api/applications/:id', async (req, res) => {
             const id = req.params.id;
@@ -313,33 +315,15 @@ async function run() {
 
         // Accept application
         app.put('/api/users/:id', async (req, res) => {
-            // const { id } = req.params;
-            // const { role } = req.body;
-            // try {
-            //     await usersCollection.updateOne(
-            //         { _id: new ObjectId(id) },
-            //         {
-            //             $set: {
-            //                 role
-            //             }
-            //         }
-            //     );
-            //     res.status(200).json({ message: 'Status updated successfully' });
-            // } catch (error) {
-            //     res.status(500).json({ message: 'Error updating status', error: error.message });
-            // }
-
             const id = req.params.id;
             const role = req.body;
-            const filter = { _id: new ObjectId(id) };
+            const filter = { email: id };
             const options = { upsert: true };
             const updatedRole = {
-                $set: {
-                    role
-                }
+                $set: role
             };
 
-            const result = await storiesCollection.updateOne(filter, updatedRole, options);
+            const result = await usersCollection.updateOne(filter, updatedRole, options);
             res.send(result);
         });
 
